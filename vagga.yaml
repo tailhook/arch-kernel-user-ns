@@ -20,6 +20,8 @@ containers:
     - !Sh "pacman -S --noconfirm base-devel git"
     # for kernel
     - !Sh "pacman -S --noconfirm xmlto docbook-xsl inetutils bc"
+    - !Sh |
+      echo 'MAKEFLAGS="-j4"' >> /etc/makepkg.conf
     - !EnsureDir /build  # hack, but useful
     - !EnsureDir /work/build  # hack, but useful
     auto-clean: true
