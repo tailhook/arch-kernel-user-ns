@@ -21,7 +21,7 @@ containers:
     # for kernel
     - !Sh "pacman -S --noconfirm xmlto docbook-xsl inetutils bc"
     - !Sh |
-      echo 'MAKEFLAGS="-j4"' >> /etc/makepkg.conf
+        echo 'MAKEFLAGS="-j4"' >> /etc/makepkg.conf
     - !EnsureDir /build  # hack, but useful
     - !EnsureDir /work/build  # hack, but useful
     auto-clean: true
@@ -45,6 +45,13 @@ commands:
     external-user-id: 0
     work-dir: packages/linux/repos/core-x86_64
     run: [/work/patch_package.sh]
+
+  package-info: !Command
+    container: arch
+    user-id: 1
+    external-user-id: 0
+    run: |
+      pacman -Qip dist/linux-user-ns-enabled-*-x86_64.pkg.tar.xz
 
   make-repo: !Command
     container: arch
