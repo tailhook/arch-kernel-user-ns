@@ -30,7 +30,7 @@ commands:
     container: arch
     user-id: 1
     external-user-id: 0
-    work-dir: packages/linux/repos/core.x86_64
+    work-dir: packages/linux/repos/core-x86_64
     accepts-arguments: true
     run: |
       [ -d /work/dist ] || mkdir /work/dist
