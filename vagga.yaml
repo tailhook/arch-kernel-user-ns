@@ -1,0 +1,55 @@
+containers:
+  arch:
+    setup:
+    - !Tar
+      url: http://mirrors.nix.org.ua/linux/archlinux/iso/2015.12.01/archlinux-bootstrap-2015.12.01-x86_64.tar.gz
+      subdir: root.x86_64
+    - !CacheDirs { /var/cache/pacman: arch-packages }
+    - !Text
+      /etc/pacman.d/mirrorlist: |
+        Server = http://mirrors.nix.org.ua/linux/archlinux/$repo/os/$arch
+      # unfortunately Tar above overwrites resolv.conf, hopefull this is enough
+      /etc/resolv.conf: |
+        nameserver 8.8.8.8
+        nameserver 8.8.4.4
+    - !Sh |
+        pacman-key --init
+        pacman-key --populate archlinux
+        pacman -Syu --noconfirm
+    # build tools
+    - !Sh "pacman -S --noconfirm base-devel git"
+    # for kernel
+    - !Sh "pacman -S --noconfirm xmlto docbook-xsl inetutils bc"
+    - !EnsureDir /work/build  # hack, but useful
+    auto-clean: true
+    volumes:
+      /tmp: !BindRW /work/build
+
+commands:
+  vagga-package: !Command
+    container: arch
+    user-id: 1
+    external-user-id: 0
+    accepts-arguments: true
+    run: |
+      [ -d dist ] || mkdir dist
+      cd /tmp
+      [ -d vagga-bin ] || git clone https://aur.archlinux.org/vagga-bin.git
+      cd vagga-bin
+      git pull --ff-only
+      PKGDEST=/work/dist makepkg "$@"
+
+  kernel-package: !Command
+    container: arch
+    user-id: 1
+    external-user-id: 0
+    accepts-arguments: true
+    run: |
+      [ -d dist ] || mkdir dist
+      cd /tmp
+      [ -d linux-user-ns-enabled ] || git clone https://aur.archlinux.org/linux-user-ns-enabled.git
+      cd linux-user-ns-enabled
+      git pull --ff-only
+      # pgp check doesn't work for some reason
+      # I believe that sha256 is good enough
+      PKGDEST=/work/dist makepkg --skippgpcheck "$@"
