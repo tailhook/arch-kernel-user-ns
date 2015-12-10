@@ -23,57 +23,30 @@ containers:
     - !EnsureDir /build  # hack, but useful
     - !EnsureDir /work/build  # hack, but useful
     auto-clean: true
-    volumes:
-      /build: !BindRW /work/build
 
 commands:
-
-  vagga-package: !Command
-    container: arch
-    user-id: 1
-    external-user-id: 0
-    accepts-arguments: true
-    run: |
-      [ -d dist ] || mkdir dist
-      cd /build
-      [ -d vagga-bin ] || git clone https://aur.archlinux.org/vagga-bin.git
-      cd vagga-bin
-      git pull --ff-only
-      PKGDEST=/work/dist makepkg "$@"
 
   kernel-package: !Command
     container: arch
     user-id: 1
     external-user-id: 0
+    work-dir: packages/linux/repos/core.x86_64
     accepts-arguments: true
     run: |
-      [ -d dist ] || mkdir dist
-      cd /build
-      [ -d linux-user-ns-enabled ] || git clone https://aur.archlinux.org/linux-user-ns-enabled.git
-      cd linux-user-ns-enabled
-      git pull --ff-only
-      # pgp check doesn't work for some reason
-      # I believe that sha256 is good enough
+      [ -d /work/dist ] || mkdir /work/dist
+      rm dist/*.tar.xz
       PKGDEST=/work/dist makepkg --skippgpcheck --log "$@"
 
-  kernel-repackage: !Command
+  prepare-package: !Command
     container: arch
     user-id: 1
     external-user-id: 0
-    accepts-arguments: true
-    run: |
-      cd /build
-      cd linux-user-ns-enabled
-      PKGDEST=/work/dist makepkg --repackage "$@"
+    work-dir: packages/linux/repos/core-x86_64
+    run: [/work/patch_package.sh]
 
-  test: !Command
+  make-repo: !Command
     container: arch
     user-id: 1
     external-user-id: 0
-    accepts-arguments: true
     run: |
-      echo -- uidmap --
-      cat /proc/self/uid_map
-      echo -- gidmap --
-      cat /proc/self/gid_map
-      stat build/linux-user-ns-enabled/pkg/linux-user-ns-enabled-headers/usr/lib/modules/4.2.5-1-user-ns-enabled/build/include/acpi
+      repo-add dist/repo.db.tar.xz dist/*
