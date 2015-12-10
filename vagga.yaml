@@ -26,7 +26,7 @@ containers:
 
 commands:
 
-  kernel-package: !Command
+  build-package: !Command
     container: arch
     user-id: 1
     external-user-id: 0
