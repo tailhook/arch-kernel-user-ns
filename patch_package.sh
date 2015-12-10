@@ -1,5 +1,5 @@
 #!/bin/sh -ex
-CONTRIBUTOR="Roman Rader <antigluk@gmail.com>"
+CONTRIBUTOR="Paul Colomiets <paul@colomiets.name>"
 OVERLAYFS_PATCH="http:\\/\\/people.canonical.com\\/~apw\\/lp1377025-utopic\\/0001-UBUNTU-SAUCE-Overlayfs-allow-unprivileged-mounts.patch"
 
 sed -i.bak "s/# CONFIG_USER_NS is not set/CONFIG_USER_NS=y/" config

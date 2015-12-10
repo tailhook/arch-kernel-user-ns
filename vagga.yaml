@@ -36,7 +36,6 @@ commands:
     accepts-arguments: true
     run: |
       [ -d /work/dist ] || mkdir /work/dist
-      rm dist/*.tar.xz
       PKGDEST=/work/dist makepkg --skippgpcheck --log "$@"
 
   prepare-package: !Command
