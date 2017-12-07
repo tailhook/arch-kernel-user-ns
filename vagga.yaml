@@ -2,12 +2,13 @@ containers:
   arch:
     setup:
     - !Tar
-      url: http://mirrors.nix.org.ua/linux/archlinux/iso/2015.12.01/archlinux-bootstrap-2015.12.01-x86_64.tar.gz
+      url: https://mirror.fra10.de.leaseweb.net/archlinux/iso/2017.12.01/archlinux-bootstrap-2017.12.01-x86_64.tar.gz
       subdir: root.x86_64
+      sha256: 916a729d30948c09b6902b6c10bf87e63cefc0c726883d2fcfe524ad80c650e7
     - !CacheDirs { /var/cache/pacman: arch-packages }
     - !Text
       /etc/pacman.d/mirrorlist: |
-        Server = http://mirrors.nix.org.ua/linux/archlinux/$repo/os/$arch
+        Server = https://mirror.fra10.de.leaseweb.net/archlinux/$repo/os/$arch
       # unfortunately Tar above overwrites resolv.conf, hopefull this is enough
       /etc/resolv.conf: |
         nameserver 8.8.8.8
